@@ -1,0 +1,131 @@
+#
+# Copyright 2015 LinkedIn Corp. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#
+
+# service definitions
+
+service: sample-service-name
+
+# plugins: StaticTopology
+topology:
+    topology_plugin: StaticTopology
+    topology_config: plugins/topology/static/topo.yaml
+
+# #
+# Logging configuration
+# #
+logger:
+  # Set this to the path where the logfile will be created. This must be an existing full path including the filename.
+  # The file name should be present and writable by the user under which the failure inducer runs
+  path: /tmp/sample-service-name.log
+  # Set this to True if you want to output logs to stdout. This is a complimentary logging and does not replace logging to the file.
+  console: True
+  # Loglevel can be one of the following: WARNING, INFO, VERBOSE, DEBUG
+  log_level: VERBOSE
+
+impact_limits:
+  total_maximum: 1
+
+##
+# Healthcheck configuration. Healthchecks are run before inducing failures
+##
+
+healthcheck:
+  # plugin is set to DefaultHealthCheck
+  plugin: DefaultHealthCheck
+  # coordinate to the healthcheck script. Required for default plugin
+  coordinate: /tmp/sample-service-name-health-check.sh
+
+##
+# Destiny block controls the list of failures to induce and the schedule that is to be followed.
+##
+
+destiny:
+  scheduler_plugin: NonDeterministicScheduler
+  NonDeterministicScheduler:
+    # global constraints for all failures. Unit is minutes.
+    constraints:
+      min_gap_between_failures: 5
+      max_gap_between_failures: 10
+      total_run_duration: 1440
+    failures:
+      graceful_bounce:
+        timeout: 50
+      ungraceful_bounce:
+        timeout: 50
+      simulate_full_gc:
+        timeout: 50
+  deterministic: false
+
+failures:
+ - name: graceful_bounce
+   induce_handler:
+     type: ShellScriptHandler
+     coordinate: ~/failure_scripts/base/graceful-stop.sh
+     arguments: ['/path/to/sample-service.pid']
+   restore_handler:
+     type: ShellScriptHandler
+     coordinate: ~/failure_scripts/base/graceful-start.sh
+     arguments: ['/path/to/start/script.sh']
+   wait_seconds: 10
+   sudo_user: app
+
+ - name: ungraceful_bounce
+   induce_handler:
+     type: ShellScriptHandler
+     coordinate: ~/failure_scripts/base/ungraceful-stop.sh
+     arguments: ['/path/to/sample-service.pid']
+   restore_handler:
+     type: ShellScriptHandler
+     coordinate: ~/failure_scripts/base/graceful-start.sh
+     arguments: ['/path/to/start/script.sh']
+   wait_seconds: 10
+   sudo_user: app
+
+ - name: simulate_full_gc
+   induce_handler:
+     type: ShellScriptHandler
+     coordinate: ~/failure_scripts/base/sigstop.sh
+     arguments: ['/path/to/sample-service.pid']
+   restore_handler:
+     type: ShellScriptHandler
+     coordinate: ~/failure_scripts/base/sigcont.sh
+     arguments: ['/path/to/sample-service.pid']
+   wait_seconds: 10
+   sudo_user: app
+
+#### sample failure definition for low lever failures
+ - name: certain_write_failure
+   induce_handler:
+     type: ShellScriptHandler
+     coordinate: /home/test/failure_scripts/base/posix_failure.sh
+     arguments: ['/usr/local/test_app/test.pid', 'posix/io/rw/pwrite64', 1, '/usr/local/libfui/bin']
+   restore_handler:
+     type: ShellScriptHandler
+     coordinate: /home/test/failure_scripts/base/posix_revert.sh
+     arguments: ['/usr/local/test_app/test.pid', 'posix/io/rw/pwrite64', '/usr/local/libfui/bin']
+   wait_seconds: 5
+   sudo_user: app
+# In the next failure scenario write failures occurs
+# with a probability of 0.5 (random write failures)
+ - name: probable_write_failure
+   induce_handler:
+     type: ShellScriptHandler
+     coordinate: /home/test/failure_scripts/base/posix_failure.sh
+     arguments: ['/usr/local/test_app/test.pid', 'posix/io/rw/pwrite64', 0.5, '/usr/local/libfui/bin']
+   restore_handler:
+     type: ShellScriptHandler
+     coordinate: /home/test/failure_scripts/base/posix_revert.sh
+     arguments: ['/usr/local/test_app/test.pid', 'posix/io/rw/pwrite64', '/usr/local/libfui/bin']
+   wait_seconds: 5
+   sudo_user: app

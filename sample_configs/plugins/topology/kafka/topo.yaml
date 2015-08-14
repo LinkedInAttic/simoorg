@@ -1,0 +1,39 @@
+#
+# Copyright 2015 LinkedIn Corp. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#
+
+zookeeper:
+    host: "kafka-zookeeper-path"
+
+zookeeper_paths:
+    broker_ids: "/brokers/ids"
+    broker_topics: "/brokers/topics"
+    topic_config: "/config/topics"
+    controller: "/controller"
+    broker_sequence_id:  "/brokers/seqid"
+
+kafka_host_resolution:
+    node_type_1:
+        CONTROLLER: {}
+    node_type_2:
+        RANDOM_BROKER: {}
+    node_type_3:
+        RANDOM_BROKER: {Topic: "Topic1", Partition: 0}
+    node_type_4:
+        RANDOM_BROKER: {Topic: "Topic2"}
+    node_type_5:
+        RANDOM_LEADER: {}
+    node_type_6:
+        LEADER: {Topic: "Topic1", Partition: 0}
+    node_type_7:
+        LEADER: {Topic: "Topic1"}

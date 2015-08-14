@@ -1,0 +1,76 @@
+#
+# Copyright 2015 LinkedIn Corp. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#
+
+# service definitions
+
+service: test_service
+
+# plugins: StaticTopology
+topology:
+    topology_plugin: StaticTopology
+    topology_config: plugins/topology/static/topo.yaml
+
+# #
+# Logging configuration
+# #
+logger:
+  # Set this to the path where the logfile will be created. This must be an existing full path including the filename.
+  # The file name should be present and writable by the user under which the failure inducer runs
+  path: /tmp/test-server.log
+  # Set this to True if you want to output logs to stdout. This is a complimentary logging and does not replace logging to the file.
+  console: True
+  # Loglevel can be one of the following: WARNING, INFO, VERBOSE, DEBUG
+  log_level: VERBOSE
+
+impact_limits:
+  total_maximum: 1
+
+##
+# Healthcheck configuration. Healthchecks are run before inducing failures
+##
+
+healthcheck:
+  # plugin is set to DefaultHealthCheck
+  plugin: DefaultHealthCheck
+  # coordinate to the healthcheck script. Required for default plugin
+  coordinate: /tmp/z.sh
+
+##
+# Destiny block controls the list of failures to induce and the schedule that is to be followed.
+##
+
+destiny:
+  scheduler_plugin: TestScheduler
+  TestScheduler:
+    # global constraints for all failures. Unit is minutes.
+    constraints:
+      min_gap_between_failures: 1
+      max_gap_between_failures: 1
+      total_run_duration: 3
+      event_file: '/tmp/event_list'
+    failures:
+      test_failure:
+        timeout: 50
+
+failures:
+  - name: test_failure
+    induce_handler:
+      type: TestHandler
+      coordinate: /tmp/atropos_unittest
+      arguments: ['failure']
+    restore_handler:
+      type: TestHandler
+      coordinate: /tmp/atropos_unittest
+      arguments: ['revert']
+    wait_seconds: 5
