@@ -2,3 +2,4 @@
 # DO NOT REMOVE - ADDED BY DISTGRADLE
 include product-spec.json
 include mppy-pinned.txt
+include README.rst
