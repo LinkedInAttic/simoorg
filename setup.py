@@ -12,6 +12,8 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #
+
+"""A failure inducing framework"""
   
 from setuptools import find_packages, setup
 from os import path, listdir
