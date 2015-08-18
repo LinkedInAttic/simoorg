@@ -1,6 +1,0 @@
-argparse
-flake8
-Flask>=0.10.1
-PyYAML>=3.11
-gunicorn>=19.3.0
-kazoo
