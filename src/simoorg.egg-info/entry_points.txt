@@ -1,3 +1,0 @@
-[console_scripts]
-simoorg = simoorg.__main__:main
-
