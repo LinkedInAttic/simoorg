@@ -28,7 +28,7 @@ If you are planning to use ssh handler plugin to induce failures against a speci
 ##Basic Usage
 Simoorg is started using the command *simoorg* which takes the path to your config directory as the only argument. Please check the config document ([link][docs/config.rst]) to better understand the configuration files.  The sample config directory packaged with the product can be used to set up your configs.  
 ```
-    Ex:     simoorg ~/configs/
+    Ex:     simoorg sample_configs/
 ```
 
 ##Usage Example
