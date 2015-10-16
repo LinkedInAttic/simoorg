@@ -282,11 +282,6 @@ class TestMoirai(unittest.TestCase):
         if status == -1:
             self.assert_(False)
         self.assertEqual(json.loads(output), expected_list_op)
-        # Test the list command
-        #status, output = self.execute_command('list', {})
-        #if status == -1:
-        #    self.assert_(False)
-        #self.assertEqual(json.loads(output), expected_list_op)
         # check plan
         status, output = self.execute_command('plan',
                                               {'service_name': 'test_service'})
