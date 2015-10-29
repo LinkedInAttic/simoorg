@@ -44,7 +44,7 @@ healthcheck:
   # plugin is set to DefaultHealthCheck
   plugin: IncorrectHealthCheck
   # coordinate to the healthcheck script. Required for default plugin
-  coordinate: /tmp/z.sh
+  coordinate: /tmp/dummy.sh
 
 ##
 # Destiny block controls the list of failures to induce and the schedule that is to be followed.

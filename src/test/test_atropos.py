@@ -15,6 +15,7 @@
 import os
 import yaml
 import time
+import shutil
 import signal
 import unittest
 import threading
@@ -24,6 +25,9 @@ import simoorg.atropos as atropos
 import mock_modules.Logger as Logger
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
+DUMMY_HEALTHCHECK_SRC = (TEST_DIR + "/unittest_configs/dummy_healthcheck/" +
+                         "dummy.sh")
+DUMMY_HEALTHCHECK_DST = "/tmp/dummy.sh"
 TEST_FATEBOOK_FILE = (TEST_DIR + "/unittest_configs/atropos_configs/" +
                       "sample_base/fate_books/test.yaml")
 CONFIG_DIR = TEST_DIR + "/../configs/"
@@ -73,6 +77,11 @@ class TestAtropos(unittest.TestCase):
 
     """
     def setUp(self):
+        try:
+            shutil.copyfile(DUMMY_HEALTHCHECK_SRC, DUMMY_HEALTHCHECK_DST)
+            os.chmod(DUMMY_HEALTHCHECK_DST, 0744)
+        except IOError:
+            print ("Unable to write to file " + DUMMY_HEALTHCHECK_DST)
         with open(TEST_FATEBOOK_FILE) as c_fd:
             self.config_ = yaml.load(c_fd)
         test_config_file = TEST_CONFIG_DIR + "atropos_config.yaml"
@@ -81,7 +90,7 @@ class TestAtropos(unittest.TestCase):
         self.logger = Logger.Logger()
 
     def tearDown(self):
-        pass
+        os.remove(DUMMY_HEALTHCHECK_DST)
 
     def fetch_failure_definition(self, failure_name):
         """

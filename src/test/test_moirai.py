@@ -15,7 +15,7 @@
 import unittest
 import os
 import subprocess
-
+import shutil
 import simoorg.moirai as Moirai
 import simoorg.Api.ApiConstants as ApiConstants
 import json
@@ -36,6 +36,10 @@ MISSING_API_CONFIGS = "sample_missing_api/"
 IMPOSSIBLE_API_CONFIGS = "sample_impossible_api/"
 COUNT_FATE = ['ps', 'aux']
 TMP_FIFO = "/tmp/test.fifo"
+TEST_DIR = os.path.dirname(os.path.realpath(__file__))
+DUMMY_HEALTHCHECK_SRC = (TEST_DIR + "/unittest_configs/dummy_healthcheck/" +
+                         "dummy.sh")
+DUMMY_HEALTHCHECK_DST = "/tmp/dummy.sh"
 
 
 class TestMoirai(unittest.TestCase):
@@ -47,10 +51,19 @@ class TestMoirai(unittest.TestCase):
     """
 
     def setUp(self):
-        pass
+        try:
+            shutil.copyfile(DUMMY_HEALTHCHECK_SRC, DUMMY_HEALTHCHECK_DST)
+            os.chmod(DUMMY_HEALTHCHECK_DST, 0744)
+        except:
+            print ("Unable to write to file " + DUMMY_HEALTHCHECK_DST)
+            raise
 
     def tearDown(self):
-        pass
+        os.remove(DUMMY_HEALTHCHECK_DST)
+        try:
+            self.moirai_fifo_fd.close()
+        except:
+            print ("Skipping moirai_fifo_fd close")
 
     def test_missing_configs(self):
         """
@@ -269,11 +282,6 @@ class TestMoirai(unittest.TestCase):
         if status == -1:
             self.assert_(False)
         self.assertEqual(json.loads(output), expected_list_op)
-        # Test the list command
-        status, output = self.execute_command('list', {})
-        if status == -1:
-            self.assert_(False)
-        self.assertEqual(json.loads(output), expected_list_op)
         # check plan
         status, output = self.execute_command('plan',
                                               {'service_name': 'test_service'})
@@ -296,6 +304,7 @@ class TestMoirai(unittest.TestCase):
                                               {'service_name': 'test_service'})
         if status == -1:
             self.assert_(False)
+        print (output)
         output_list = json.loads(output)
         for server in output_list:
             if server not in server_list:
