@@ -354,12 +354,18 @@ class Moirai(object):
             print ("[FATAl]: Calling finish() due to errors ", exc)
             self.finish()
             raise
+
+        atropos_class = getattr(atropos, 'Atropos')
+
+        def spawn_atropos(*args, **kwargs):
+            atropos_instance = atropos_class(*args, **kwargs)
+            atropos_instance.main_loop()
+
         # Deploy atropos army
         for service_name, config in self.atropos_fate_book_configs.iteritems():
             if self.verbose:
                 print "[INFO]: Deploying atropos for:", service_name
-            handler = getattr(atropos, 'Atropos')
-            proc = multiprocessing.Process(target=handler,
+            proc = multiprocessing.Process(target=spawn_atropos,
                                            args=(config, self.config_dir,
                                                  self.atropos_data_queue,
                                                  self.atropos_event_queue,),
