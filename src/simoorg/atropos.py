@@ -59,6 +59,21 @@ class Atropos(object):
         The Atropos class
     """
 
+    @staticmethod
+    def spawn(*args, **kwargs):
+        """
+            Builder function for the atropos class.
+            Init class and run it main functionality.
+            Args: Proxy to the __init__
+            Return:
+                None
+            Raise:
+                None
+        """
+        instance = Atropos(*args, **kwargs)
+        scheduler = instance.get_scheduler()
+        instance.main_loop(scheduler)
+
     def __init__(self, config, config_dir, output_queue,
                  event_queue, verbose=False, debug=False,
                  logger_instance=None):
@@ -130,7 +145,55 @@ class Atropos(object):
 
         signal.signal(signal.SIGTERM, self.sigterm_handler)
 
-    def main_loop(self):
+    def get_scheduler(self, scheduler_plugin_path=SCHEDULER_PLUGIN_PATH):
+        """
+            Atropos receives the plan from the scheduler and follows
+            each item in the plan
+            Args:
+                scheduler_plugin_path - string containing import path
+            Return:
+                scheduler - scheduler instance
+            Raise:
+                ImportError: If the scheduler module can't be imported
+                AttributeError: If scheduler class isn't at the provided
+                                scheduler module
+                KeyError: If destiny is malformed (missing important
+                                                   information)
+        """
+
+        if self.scheduler_plugin is None:
+            self.logger_instance.logit("Error",
+                                       "Scheduler NOT found")
+            sys.exit(0)
+        self.logger_instance.logit("INFO",
+                                   "As defined in destiny, using"
+                                   " the scheduler plugin: {0}"
+                                   .format(self.scheduler_plugin),
+                                   log_level="VERBOSE")
+        try:
+            scheduler_module = __import__(scheduler_plugin_path + '.' +
+                                          self.scheduler_plugin + '.' +
+                                          self.scheduler_plugin,
+                                          fromlist=self.scheduler_plugin)
+        except ImportError:
+            self.logger_instance.logit("Error",
+                                       "The scheduler plugin {0}"
+                                       " not found"
+                                       .format(self.scheduler_plugin),
+                                       log_level="VERBOSE")
+            raise
+        try:
+            scheduler_class = getattr(scheduler_module, self.scheduler_plugin)
+            return scheduler_class(self.get_scheduler_destiny(), verbose=True)
+        except (AttributeError, KeyError):
+            self.logger_instance.logit("Error",
+                                       "The scheduler class {0}"
+                                       " not found"
+                                       .format(self.scheduler_plugin),
+                                       log_level="VERBOSE")
+            raise
+
+    def main_loop(self, scheduler):
         """
             Atropos receives the plan from the scheduler and follows
             each item in the plan
@@ -145,38 +208,6 @@ class Atropos(object):
         """
         self.journal = Journal(self.impact_limits,
                                logger_instance=self.logger_instance)
-        if self.scheduler_plugin is None:
-            self.logger_instance.logit("Error",
-                                       "Scheduler NOT found")
-            sys.exit(0)
-        self.logger_instance.logit("INFO",
-                                   "As defined in destiny, using"
-                                   " the scheduler plugin: {0}"
-                                   .format(self.scheduler_plugin),
-                                   log_level="VERBOSE")
-        try:
-            scheduler_module = __import__(SCHEDULER_PLUGIN_PATH + '.' +
-                                          self.scheduler_plugin + '.' +
-                                          self.scheduler_plugin,
-                                          fromlist=self.scheduler_plugin)
-        except ImportError:
-            self.logger_instance.logit("Error",
-                                       "The scheduler plugin {0}"
-                                       " not found"
-                                       .format(self.scheduler_plugin),
-                                       log_level="VERBOSE")
-            raise
-        try:
-            scheduler_class = getattr(scheduler_module, self.scheduler_plugin)
-            scheduler = scheduler_class(self.get_scheduler_destiny(),
-                                        verbose=True)
-        except (AttributeError, KeyError):
-            self.logger_instance.logit("Error",
-                                       "The scheduler class {0}"
-                                       " not found"
-                                       .format(self.scheduler_plugin),
-                                       log_level="VERBOSE")
-            raise
 
         # Put all the atropos specific info into the output queue
         self.output_queue.put((self.service, self.get_all_nodes(),

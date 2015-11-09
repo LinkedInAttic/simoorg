@@ -357,15 +357,11 @@ class Moirai(object):
 
         atropos_class = getattr(atropos, 'Atropos')
 
-        def spawn_atropos(*args, **kwargs):
-            atropos_instance = atropos_class(*args, **kwargs)
-            atropos_instance.main_loop()
-
         # Deploy atropos army
         for service_name, config in self.atropos_fate_book_configs.iteritems():
             if self.verbose:
                 print "[INFO]: Deploying atropos for:", service_name
-            proc = multiprocessing.Process(target=spawn_atropos,
+            proc = multiprocessing.Process(target=atropos_class.spawn,
                                            args=(config, self.config_dir,
                                                  self.atropos_data_queue,
                                                  self.atropos_event_queue,),
