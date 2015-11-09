@@ -130,8 +130,6 @@ class Atropos(object):
 
         signal.signal(signal.SIGTERM, self.sigterm_handler)
 
-        self.main_loop()
-
     def main_loop(self):
         """
             Atropos receives the plan from the scheduler and follows
