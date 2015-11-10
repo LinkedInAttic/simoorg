@@ -18,18 +18,23 @@
 import simoorg.moirai as moi
 import sys
 
-if len(sys.argv) != 2:
-    print "Please provide config path"
-    exit(1)
-CONFIG_PATH = sys.argv[1]
 
-MOIRAI = moi.Moirai(CONFIG_PATH, verbose=True, debug=False)
+def main():
+    if len(sys.argv) != 2:
+        print "Please provide config path"
+        exit(1)
+    CONFIG_PATH = sys.argv[1]
 
-MOIRAI.spawn_atropos()
+    MOIRAI = moi.Moirai(CONFIG_PATH, verbose=True, debug=False)
 
-for service_name, proc_handler in MOIRAI.atropos_army.iteritems():
-    print service_name, proc_handler.pid
+    MOIRAI.spawn_atropos()
 
-# Wait for all the atropos to finish
+    for service_name, proc_handler in MOIRAI.atropos_army.iteritems():
+        print service_name, proc_handler.pid
 
-MOIRAI.finish()
+    # Wait for all the atropos to finish
+
+    MOIRAI.finish()
+
+if __name__ == '__main__':
+    main()
