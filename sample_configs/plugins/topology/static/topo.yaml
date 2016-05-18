@@ -16,4 +16,4 @@
 # Static topology definition
 #
 topology:
-  nodes: ['test-node]
+  nodes: [test-node]
