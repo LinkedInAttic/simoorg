@@ -30,7 +30,7 @@ class ShellScriptHandler(BaseHandler):
     """ Shell Script Handler piggybacking on paramiko SSH"""
 
     def __init__(self, config_dir, hostname, logger_instance=None,
-        verbose=False, debug=False):
+                 verbose=False, debug=False):
         """
             Constructor method responsible for reading the config and
             setting up the ssh client.
