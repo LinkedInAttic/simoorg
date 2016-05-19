@@ -47,6 +47,8 @@ class ShellScriptHandler(BaseHandler):
         """
         BaseHandler.__init__(self, config_dir, hostname,
                              logger_instance, verbose)
+        self.hostname = hostname
+        self.logger_instance = logger_instance
         self.debug = debug
         self.verbose = verbose
         self.ssh_client = None
@@ -64,8 +66,6 @@ class ShellScriptHandler(BaseHandler):
         for key, val in self.config.iteritems():
             setattr(self, key, val)
         del self.config
-
-        self.hostname = hostname
 
     def authenticate(self):
         """
