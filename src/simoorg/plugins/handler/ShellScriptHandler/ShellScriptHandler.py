@@ -46,7 +46,7 @@ class ShellScriptHandler(BaseHandler):
                 None
         """
         BaseHandler.__init__(self, config_dir, hostname,
-                             logger_instance, verbose, debug=False)
+                             logger_instance, verbose)
         self.debug = debug
         self.verbose = verbose
         self.ssh_client = None
