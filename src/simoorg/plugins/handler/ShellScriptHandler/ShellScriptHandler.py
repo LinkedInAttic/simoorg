@@ -29,11 +29,8 @@ PLUGIN_CONFIG_PATH = 'plugins/handler/ShellScriptHandler/'
 class ShellScriptHandler(BaseHandler):
     """ Shell Script Handler piggybacking on paramiko SSH"""
 
-    def __init__(self, config_dir, hostname, logger_instance=None, port=22,
-                 username=None, password=None, pkey=None, key_filename=None,
-                 connect_timeout=None, allow_agent=True, look_for_keys=True,
-                 compress=False, sock=None, verbose=False, debug=False,
-                 command_timeout=None):
+    def __init__(self, config_dir, hostname, logger_instance=None,
+        verbose=False, debug=False):
         """
             Constructor method responsible for reading the config and
             setting up the ssh client.
@@ -41,19 +38,6 @@ class ShellScriptHandler(BaseHandler):
                 config_dir - Path to config files
                 hostname - hostname to run the handler against
                 logger_instance - An instance of logger class
-                port - SSH port
-                username - Username to use for ssh
-                password - password for ssh
-                pkey - private ssh key
-                key_filename - ssh key file path
-                connect_timeout - Timeout for ssh connection
-                allow_agent set to False to disable connecting to the SSH agent
-                look_for_keys - set to False to disable searching for
-                    discoverable private key files in ``~/.ssh/``
-                compress - set to True to turn on compression
-                sock - an open socket or socket-like object
-                    (such as a `.Channel`) to use for communication
-                    to the target host
                 verbose - verbosity flag
                 debug - debug flag
             Raise:
@@ -62,7 +46,7 @@ class ShellScriptHandler(BaseHandler):
                 None
         """
         BaseHandler.__init__(self, config_dir, hostname,
-                             logger_instance, verbose)
+                             logger_instance, verbose, debug=False)
         self.debug = debug
         self.verbose = verbose
         self.ssh_client = None
@@ -75,30 +59,13 @@ class ShellScriptHandler(BaseHandler):
             paramiko.common.logging.basicConfig(level=paramiko.common.DEBUG)
         self.config = None
         self.load_config()
-        # initialize the config variables
-        self.host_key_path = None
 
         # read in yaml configuration
         for key, val in self.config.iteritems():
             setattr(self, key, val)
         del self.config
 
-        # Manually listing the arguments
         self.hostname = hostname
-        self.port = port
-        self.username = username
-        self.password = password
-        self.pkey = pkey
-        self.key_filename = key_filename
-        self.connect_timeout = connect_timeout
-        self.allow_agent = allow_agent
-        self.look_for_keys = look_for_keys
-        self.compress = compress
-        self.sock = sock
-        self.verbose = verbose
-        self.debug = debug
-        self.command_timeout = command_timeout
-        self.logger_instance = logger_instance
 
     def authenticate(self):
         """
