@@ -12,16 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #
 
-# supported in code
 host_key_path: ~/.ssh/known_hosts
-
-# not supported in code yet
 port: 22
 username:
 password:
 pkey:
 key_filename:
 allow_agent: yes
-look_for_kets: yes
+look_for_keys: yes
 compress: yes
 sock:
+connect_timeout:
+compress: false
+command_timeout:
