@@ -1,7 +1,7 @@
-#LOW LEVEL FAILURES
+# LOW LEVEL FAILURES
 Libfui provides an easy way to induce low level failures to any POSIX call in your application. To be able to use low level failures against POSIX calls, we require the application to be started under the control of libfiu. The best practice is to use these failures either on your staging/dev clusters or run on select nodes from your production cluster.
 
-Please check the libfiu website (https://blitiri.com.ar/p/libfiu/) to understand how to build and install libfiu on your servers. Once the libfiu packages are installed, please restart your application under the control of libfiu. You can achieve this using the fiu-run command ( see https://blitiri.com.ar/p/libfiu/doc/man-fiu-run.html ), the command should look something like the following
+Please check the [libfiu website](https://blitiri.com.ar/p/libfiu/) to understand how to build and install libfiu on your servers. Once the libfiu packages are installed, please restart your application under the control of libfiu. You can achieve this using the [fiu-run command](https://blitiri.com.ar/p/libfiu/doc/man-fiu-run.html), the command should look something like the following
 ```
 fiu-run -x -c $COMMAND
 ```

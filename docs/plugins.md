@@ -1,7 +1,7 @@
-#How to create a new plugin:
+# How to create a new plugin:
 In simoorg, we have four types of pluggable component namely Topology, Healthcheck, Scheduler and Handler. Even though we ship a few standard plugins of each category, we understand that it will not meet the requirements of all the potential customers. So one our guiding design principles has been to ensure that system is easily extensible. So in this document, we will be detailing the various steps to be taken to create a new plugin. 
 
-##Topology
+## Topology
 First we start with the the topology plugin. Simoorg relies on the topology plugin to retrieve information about the individual nodes of a service. The arguments that are passed to any topology plugin is 
 *Args:*
 input_file - the config file to be read by the plugin
@@ -56,7 +56,7 @@ kafka_host_resolution:
         node_type_7:
             RANDOM_BROKER: {Topic: "Topic3"} 
         
-````
+```
 * This class reads the config file and loads it in memory data structure. At the    
                  time of failure induction, it returns a random host (broker host name) to the    
                  caller method. The selection of this host depends upon the kind of node selected      
@@ -67,7 +67,7 @@ In the above Kafka Topology plugin example, it is possible to modify the config 
 Path to KafkaTopology plugin : simoorg.plugins.topology.KafkaTopology.KafkaTopology
  
 
-##HealthCheck : 
+## HealthCheck : 
 Healthcheck plugin is responsible for checking the health of the target cluster.
 *Args:*
 script - Any external script to be used by the plugin
@@ -92,7 +92,7 @@ Let’s take an example of *KafkaHealthCheck plugin* :
         
  If users want to use a shell script, that will do the HealthCheck on the target cluster, they can use the DefaultHealtCheck plugin in the fate book and pass it the customized shell_script. The DefaultHealthCheck plugin like KafkaHealthCheck plugin implements the check() method that will return true if the target cluster is healthy, else false otherwise.
 
-##Scheduler:
+## Scheduler:
 The Scheduler plugin is responsible for creating the plans that an atropos process will be following. A plan as received by atropos should be a list of single item dictionaries, where the dictionary has the failure name as the key and the trigger time as the value.
 *Args:*
     destiny_object - A dictionary containing the contents of the plugin key of the destiny   
@@ -116,7 +116,7 @@ Let us consider the example of NonDeterministicScheduler plugin:
 
 There are a number of fully implemented methods in BaseScheduler, that you can use in your implementation to better access the destiny object.
 
-##Handler
+## Handler
 Handler is the plugin responsible for actually inducing and reverting the failures
 *Args:*
 config_dir - This is the path to the simoorg config directory

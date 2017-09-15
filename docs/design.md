@@ -1,4 +1,4 @@
-#SIMOORG - HIGH LEVEL DESIGN
+# SIMOORG - HIGH LEVEL DESIGN
 This document describes high level design of Simoorg: Linkedin’s Failure Inducing Framework. The rationale behind developing Simoorg is to have a simple yet powerful and extensible failure inducing framework. Simoorg is written in Python - Linkedin's lingua franca for solving operational challenges.
 
 
@@ -11,7 +11,7 @@ Key points of Simoorg are:
 * Comprehensive logging to help SREs and developers to get valuable insights about how their application of choice reacts to failures.
 * Support of heterogeneous infrastructure by introducing flexible execution handlers. New execution handlers are easy to plug in with minimal efforts.
 
-##From a bird's eye view
+## From a bird's eye view
 
 Simoorg’s main job is to induce and revert failures against a service of your choice. The failures are induced based on the scheduler plugin type you wish to use. Simoorg comes with a non-deterministic scheduler configured, which generates failures at a random time. Although the failures are generated at a random time, you can still set a few limitations like: total run duration and min/max gap between failures. Each failure is followed by a revert, ensuring that the cluster we operate against is back to a clean state. Simoorg ensures logging of important metrics like failure name, impact and the time of the impact to help SREs and developers to reason about fault tolerance of their application of choice. 
 
@@ -33,7 +33,7 @@ In the subsequent paragraphs we will cover important components and talk about h
 * Topology
 * Api Server
 
-###Moirai
+### Moirai
 
 Moirai is a single threaded process that monitors and manages individual Atropos instances using standard UNIX IPC mechanism and python queues. It also provides entry points for the Api Server to retrieve information about the various services being tested.  Moirai takes configs directory path as an input argument and bootstraps the framework by reading configuration files in the configs directory. Configs directory contains:
 
@@ -48,7 +48,7 @@ Here each Atropos can communicate specific information to Moirai, with the help 
 ![High level Design](/docs/images/high_level.jpg)
 
 
-###Atropos
+### Atropos
 
 Upon initialization, each Atropos instance reads one Fate Book ([link][/docs/configs.rst]) and depending on the destiny defined in the Fate Book sleeps until requirements are met. Once requirements are met, Atropos induces a random failure, waits for the specified interval and reverts to bring the cluster to a clean state. There are two types of requirements to be met before inducing a failure:
 
@@ -60,12 +60,12 @@ Each Atropos instance has its own instance of a Scheduler which is in charge of 
 Apart from the Scheduler, each Atropos instance has its own instance of a Handler,  Logger and Journal. The high level diagram reflecting Atropos and its components is as follows:
 ![Atropos Components](/docs/images/atr1.png)
 
-###Scheduler
+### Scheduler
 
 A Scheduler generates a failure plan and keeps track of time. Currently Simoorg ships only with a Non-deterministic scheduler. The Non-deterministic scheduler randomly generates dispatch times and associates them with random failures. We refer to this sequence of timestamp and failures internally as a Plan. Once generated, the Plan is passed to Atropos.
 
 
-###Handler
+### Handler
 
 Each failure definition should have a handler associated with it. A Handler is referred to by its name within a failure definition and is responsible for inducing and reverting failures. The table below lists supported handlers and handlers planned to be available in future:
 
@@ -77,7 +77,7 @@ AWS|AWS API calls|not supported|TBD|
 Rackspace|Rackspace API|not supported|TBD|
 
 
-###Journal
+### Journal
 
 Each Observer has a separate Journal instance. The Journal is responsible for:
 
@@ -85,11 +85,11 @@ Each Observer has a separate Journal instance. The Journal is responsible for:
 * Persisting the current state of Atropos to support session resumption
 * Resuming state after a crash
 
-###Logger
+### Logger
 
 Each Atropos has a separate Logger instance. The Logger is used to log and store arbitrary messages spit out at various points of Plan execution.
 
-###HealthCheck
+### HealthCheck
 
 Healthcheck is an optional component that allows you to control the damage inflicted against your service. If enabled, Atropos kicks off the healthcheck logic defined in the Fate Book before inducing a failure. The Healthcheck component needs to return success in order for the failure run. Otherwise the Scheduler skips the current failure cycle. This ensures that we are not aggravating any existing issues and lets the cluster fire self-healing routines and recover. If a healthcheck is not defined, failures will be induced as scheduled assuming the cluster was able to recover.
 
@@ -109,7 +109,7 @@ The best practice is to leverage your current monitoring system to identify the 
 
 We also ship a simple kafka HealthCheck out of the box. This plugin considers a cluster to be healthy if the under replicated partition count is zero for all the nodes in cluster. The plugin also depends on the kafka topology config file to get information about the cluster.
 
-###Topology
+### Topology
 
 The Topology component is responsible for identifying and keeping the list of nodes that constitute your service. In most cases this is just a list of servers present in your cluster. The Topology component is also responsible for choosing a random node from the list and handing it over to Atropos. We ship a static topology and Kafka topology plugins with our source code. 
 
@@ -128,7 +128,7 @@ Another example of topology is Kafka topology. It is a custom Topology component
 * RANDOM_LEADER - Where the node is a leader for a random topic and a random partition
 * LEADER - Where the node is a leader for a specific topic and a specific partition (if you skip the partition it randomly selects a partition)
 
-###Api Server
+### Api Server
 
 Simoorg provides a simple API interface based on Flask. The API server communicates with Moirai process through linux FIFOs, so it is necessary that the Api Server is started on the same server as the Moirai process. The API endpoints currently supported by our systems are
 

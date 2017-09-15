@@ -1,13 +1,13 @@
-#Introduction
+# Introduction
 This document describes the process of setting up and running simoorg against an application cluster.
-##Installation
+## Installation
 The system requirements for Simoorg are as follows
 OS: Any Linux distribution
 Python Version : Python-2.6
 Additional Python Modules: multiprocessing, yaml, paramiko
 
 Simoorg is currently distributed via pip, so to install the package please run the following command
-````
+```
 (sudo) pip install simoorg
 ```
 If you want to work with the latest code, please run the following commands
@@ -25,13 +25,13 @@ Once you have confirmed that the tests have passed, you can install the code by 
 ```
 If you are planning to use ssh handler plugin to induce failures against a specific service cluster, please ensure that the user you are using to run simoorg have Passwordless SSH access to all the nodes in the cluster. You should also ensure that any failure scripts you plan to use are already present on all the nodes in the target service cluster.
 
-##Basic Usage
-Simoorg is started using the command *simoorg* which takes the path to your config directory as the only argument. Please check the config document ([link](/docs/config.md)) to better understand the configuration files.  The sample config directory packaged with the product can be used to set up your configs.
+## Basic Usage
+Simoorg is started using the command *simoorg* which takes the path to your config directory as the only argument. Please check the [config document](/docs/config.md) to better understand the configuration files.  The sample config directory packaged with the product can be used to set up your configs.
 ```
     Ex:     simoorg ~/configs/
 ```
 
-##Usage Example
+## Usage Example
 In this section of the document, we will be describing how to use Simoorg against a kafka cluster. For this examples we will be running three predefined failures (graceful stop, ungraceful stop and simulate full GC) on random nodes in the cluster using the Shell script handler plugin. We will be executing the failures in a random manner using the non deterministic scheduler.  We will also be using the Kafka Topology plugin and  Kafka HealthCheck plugin. Both of these plugins are packaged with the product and are ready to use out of the box.
 
 Before we start , we need to make sure that all the required failure scripts (the ones required for these failure scenario is present in the repo under Simoorg/failure_scripts/base/) are present on all the broker nodes in the kafka cluster. Let’s assume that the script is present in the location ~/test/failure_scripts/base/ on the kafka brokers, we will need this path later when we are updating our configurations.
@@ -182,4 +182,3 @@ Where ~/kafka_configs/ is the path to your failure inducer configs. For longer r
     gunicorn 'simoorg.Api.MoiraiApiServer:create_app("~/kafka_configs/api.yaml")'
 ```
 Where api.yaml should contain a valid path for the named pipe used by both the api server and Simoorg. Our current implementation of api, relies on the simoorg process to retrieve all information and do not serve any data once the process is dead. Please check the design doc to better understand the various REST API endpoints
-
