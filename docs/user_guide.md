@@ -7,7 +7,7 @@ Python Version : Python-2.6
 Additional Python Modules: multiprocessing, yaml, paramiko
 
 Simoorg is currently distributed via pip, so to install the package please run the following command
-````
+```
 (sudo) pip install simoorg
 ```
 If you want to work with the latest code, please run the following commands
