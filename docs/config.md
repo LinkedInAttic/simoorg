@@ -1,4 +1,4 @@
-#SIMOORG - CONFIG FILES
+# SIMOORG - CONFIG FILES
 This document provides a quick overview of the various configuration files currently used by Simoorg. Simoorg expects path to the config directory as the first console argument and a standard simoorg config directory should have the following structure
 ```
 configs/
@@ -18,7 +18,7 @@ configs/
 Next we will go through each one of these configurations in details
 
 
-##API CONFIG api.yaml
+## API CONFIG api.yaml
 This is our main api config file, this needs to be passed to both Moirai process and Api server as well. This is a yaml file, which is mainly used to store input named pipe location for Moirai process. It may be used to contain more config items in the future as the api functionalities are extended.
 
 
@@ -29,14 +29,14 @@ moirai_input_fifo: '/tmp/moirai.fifo'
 
 ```
 
-##FATE BOOKS fate_books/*
+## FATE BOOKS fate_books/*
 Fate Book is a collection of configurations used to to describe failures to be induced against your service. Each service should have a unique Fate Book associated with it. Upon starting up, Simoorg scans configs/fate_books subdirectory for files with .yaml extension. Each qualified file is treated as Fate Book and used to instantiate observers that are watching and executing failures based on the conditions defined in a Fate Book.
 Fate Books are human readable and can be edited using a conventional editor.
 
-###Fate Book Format
+### Fate Book Format
 Format of the Fate Books are chosen to be YAML for its simplicity yet being capable to formally describe nested objects in a human readable form.
 
-###Fate Book Contents
+### Fate Book Contents
 Each service that needs to receive failure commands from the Failure Inducer, has to have a Fate Book associated with it. Below there is a sample Fate Book for an example service (called test-service)
 
 ```yaml
@@ -107,16 +107,16 @@ failures:
 
 ```
 
-###Fate Book Sections
+### Fate Book Sections
 Next we take a closer look at the various sections of the fatebook
 
 
-####service:
+#### service:
 Required : Yes
 Default: None
 The value for service key is used to uniquely identify the service being specified in that fate book. Simoorg enforces that no two fate books can have the same value for the service key.
 
-####topology:
+#### topology:
 Required : Yes
 All values related to topology plugin should be stored under this section. We expect only two values under this key, they are as follows
 
@@ -130,7 +130,7 @@ The name of the topology plugin should be same as plugin class (please check the
 topology_config :  
 Any plugin specific values should be added to this section.Simoorg expects the config to be contained inside the main config directory and the path provided here is relative to the config root
 
-####logger
+#### logger
 Required : Yes
 
 Contains the logging related information, we expect it to contain the following keys
@@ -150,7 +150,7 @@ This key is used to enable console logging
 log_level :  
 Simoorg expects the value for this key to be "WARNING", "INFO", "VERBOSE" or "DEBUG"
 
-####healthcheck
+#### healthcheck
 Required : Yes
 
 In this section we list all of our health check related configs. the various keys we expect in this section are as follows
@@ -168,7 +168,7 @@ Depends on what plugin you use. In case of Defaulthealthcheck this is the absolu
 plugin_config :   
 Place to specify any plugin specific configurations, Currently is None Default Health check plugin.
 
-####destiny
+#### destiny
 Required : Yes
 
 This section is responsible for listing all the scheduler specific information. We expect the following keys to be present under the destiny section
@@ -187,7 +187,7 @@ scheduler_plugin| the name of the scheduler plugin| Yes | None|
 
 Please check the plugins document to better understand the plugin names. In addition to the keys listed above, the "scheduler_plugin" key could also contain any plugin specific config, also the failure name given in "scheduler_plugin"->failures->"failure_name" should have a valid failure definition in the failures sections of the fate book
 
-####failures
+#### failures
 This section includes a list of failure definition and each item in the list should contain the following keys
 
 Key name | Description | Mandatory | Default |
@@ -204,11 +204,10 @@ restor_handler->args | The args passed to the handler during failure revert | Ye
 wait_seconds |  The wait seconds between failure induction and failure revert | Yes | None |
 
 
-###Plugin Configs
-=================
+### Plugin Configs 
 These are config files that may be specific to some plugin. Since these configs are closely related to the plugins, we will mainly be covering configs for the plugins that are shipped out of the box.
 
-####Handler Configs
+#### Handler Configs
 
 For any handler plugin (lets assume the handler name is test_handler), we expect the config to be located in the path config/plugins/handler/test_handler/test_handler.yaml, the config contents greatly depends on the specific handler.The ShellScriptHandler plugin file for example,  looks like this :
 
@@ -217,7 +216,7 @@ For any handler plugin (lets assume the handler name is test_handler), we expect
 host_key_path: ~/.ssh/known_hosts
 ```
 
-####Topology Configs
+#### Topology Configs
 The location of the topology plugin is usually provided under the topology section of the fate book. Again the content of this configuration file depends heavily on the specific plugin.But here are two sample configuration files for StaticTopology and KafkaTopology plugins respectively. In StaticTopology we list all the servers present in the service under the key node
 ```
 # file: configs/plugins/topology/static/topo.yaml 
@@ -261,6 +260,3 @@ kafka_host_resolution:
         LEADER: {Topic: "Topic1"}
 
 ```
-
-
-
