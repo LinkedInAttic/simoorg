@@ -26,7 +26,7 @@ Once you have confirmed that the tests have passed, you can install the code by 
 If you are planning to use ssh handler plugin to induce failures against a specific service cluster, please ensure that the user you are using to run simoorg have Passwordless SSH access to all the nodes in the cluster. You should also ensure that any failure scripts you plan to use are already present on all the nodes in the target service cluster.
 
 ## Basic Usage
-Simoorg is started using the command *simoorg* which takes the path to your config directory as the only argument. Please check the config document ([link](/docs/config.md)) to better understand the configuration files.  The sample config directory packaged with the product can be used to set up your configs.
+Simoorg is started using the command *simoorg* which takes the path to your config directory as the only argument. Please check the [config document](/docs/config.md) to better understand the configuration files.  The sample config directory packaged with the product can be used to set up your configs.
 ```
     Ex:     simoorg ~/configs/
 ```
